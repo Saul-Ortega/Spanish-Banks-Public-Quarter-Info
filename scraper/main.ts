@@ -32,25 +32,14 @@ import type { Browser, GoToOptions, LaunchOptions, Page, Viewport } from 'puppet
     await page.locator(".iasComboBox.iasTextBox.validableValue").click();
 
     //GET ALL OPTIONS VALUE FROM THE FIRST DROPDOWN
-    const optionsValue: string[] = await page.evaluate(() => Array.from(document.querySelector<HTMLSelectElement>(".iasComboBox.iasTextBox.validableValue")?.querySelectorAll<HTMLOptionElement>("option") ?? []).map((option) => option.value));
+    const optionsValue: string[] = await page.evaluate(() => Array.from(document.querySelector<HTMLSelectElement>("#ComboPeriodos")?.querySelectorAll<HTMLOptionElement>("option") ?? []).map((option) => option.value));
 
     for ( const optionValue of optionsValue ) {
         //SELECTS EACH OPTION IN THE DROPDOWN
-        await page.select(".iasComboBox.iasTextBox.validableValue", optionValue);
+        await page.select("#ComboPeriodos", optionValue);
 
         //CLICKS ON SEARCH BUTTON
-        await page.evaluate(() => {
-            const buttons: Array<HTMLElement> = Array.from(document.querySelectorAll<HTMLElement>(".ui-button.ui-corner-all.ui-widget.iasWidget.iasButton") ?? []);
-
-            for ( let buttonIndex: number = 0; buttonIndex < buttons.length; buttonIndex++ ) {
-                console.log("Button Index", buttonIndex);
-                const button: HTMLElement = document.querySelectorAll<HTMLElement>(".ui-button.ui-corner-all.ui-widget.iasWidget.iasButton")[buttonIndex];
-                if ( button.querySelector("span")?.innerText === "Buscar" ) {
-                    button.click();
-                    return;
-                }
-            }
-        });
+        await page.locator("#Boton0").filter(button => button.textContent === "Buscar").click();
     }
 
     await browser.close();
