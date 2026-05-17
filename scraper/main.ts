@@ -4,7 +4,7 @@ import type { Browser, GoToOptions, LaunchOptions, Page, Viewport } from 'puppet
 (async () => {
     console.log("Initiating web scraper...")
 
-    const launchOptions: LaunchOptions = { headless: false };
+    const launchOptions: LaunchOptions = { headless: false, slowMo: 200 };
     const goToOptions: GoToOptions = { waitUntil: 'networkidle2' };
 
     const browser: Browser = await puppeteer.launch(launchOptions);
@@ -17,7 +17,7 @@ import type { Browser, GoToOptions, LaunchOptions, Page, Viewport } from 'puppet
 
     //SEARCHES FOR THE QUARTER PUBLIC INFORMATION LINK AND CLICKS IT
     await page.evaluate(() => {
-        const subMenus: NodeListOf<HTMLElement> = document.querySelectorAll(".iasLabel.iasNavegacionSubMenu");
+        const subMenus: NodeListOf<HTMLSpanElement> = document.querySelectorAll<HTMLSpanElement>(".iasLabel.iasNavegacionSubMenu");
 
         for ( let i: number = 0; i < subMenus.length; i++ ) {
             if ( subMenus[i].innerText === "Información pública trimestral" ) {
@@ -27,20 +27,31 @@ import type { Browser, GoToOptions, LaunchOptions, Page, Viewport } from 'puppet
         }
     });
     
-    //CLICKS IN THE QUARTER OPTIONS SELECT
+    //WAITS UNTIL THE SELECT WITH THE QUARTERS IS AVAILABLE AND CLICKS IT
+    await page.waitForSelector(".iasComboBox.iasTextBox.validableValue > option");
     await page.locator(".iasComboBox.iasTextBox.validableValue").click();
 
-    await page.waitForSelector(".iasComboBox.iasTextBox.validableValue");
+    //GET ALL OPTIONS VALUE FROM THE FIRST DROPDOWN
+    const optionsValue: string[] = await page.evaluate(() => Array.from(document.querySelector<HTMLSelectElement>(".iasComboBox.iasTextBox.validableValue")?.querySelectorAll<HTMLOptionElement>("option") ?? []).map((option) => option.value));
 
-    await page.evaluate(() => {
-        const quarterOptions: NodeListOf<HTMLElement> = document.querySelectorAll<HTMLElement>(".iasComboBox.iasTextBox.validableValue > option");
+    for ( const optionValue of optionsValue ) {
+        //SELECTS EACH OPTION IN THE DROPDOWN
+        await page.select(".iasComboBox.iasTextBox.validableValue", optionValue);
 
-        for ( let i: number = 0; i < quarterOptions.length; i++ ) {
-            console.log(quarterOptions[i].innerText);
-        }
-    });
+        //CLICKS ON SEARCH BUTTON
+        await page.evaluate(() => {
+            const buttons: Array<HTMLElement> = Array.from(document.querySelectorAll<HTMLElement>(".ui-button.ui-corner-all.ui-widget.iasWidget.iasButton") ?? []);
 
-
+            for ( let buttonIndex: number = 0; buttonIndex < buttons.length; buttonIndex++ ) {
+                console.log("Button Index", buttonIndex);
+                const button: HTMLElement = document.querySelectorAll<HTMLElement>(".ui-button.ui-corner-all.ui-widget.iasWidget.iasButton")[buttonIndex];
+                if ( button.querySelector("span")?.innerText === "Buscar" ) {
+                    button.click();
+                    return;
+                }
+            }
+        });
+    }
 
     await browser.close();
 })();
