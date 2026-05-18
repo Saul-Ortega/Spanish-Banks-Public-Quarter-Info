@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer'
-import type { Browser, GoToOptions, LaunchOptions, Page, Viewport } from 'puppeteer';
+import type { Browser, ElementHandle, GoToOptions, LaunchOptions, Page, Viewport } from 'puppeteer';
 
 (async () => {
     console.log("Initiating web scraper...")
@@ -32,7 +32,7 @@ import type { Browser, GoToOptions, LaunchOptions, Page, Viewport } from 'puppet
     await page.locator(".iasComboBox.iasTextBox.validableValue").click();
 
     //GET ALL OPTIONS VALUE FROM THE FIRST DROPDOWN
-    const optionsValue: string[] = await page.evaluate(() => Array.from(document.querySelector<HTMLSelectElement>("#ComboPeriodos")?.querySelectorAll<HTMLOptionElement>("option") ?? []).map((option) => option.value));
+    const optionsValue: string[] = await page.evaluate(() => Array.from(document.querySelector<HTMLSelectElement>("#ComboPeriodos")?.querySelectorAll<HTMLOptionElement>("option") ?? []).map((option) => option.value).filter((value) => value.length > 0));
 
     for ( const optionValue of optionsValue ) {
         //SELECTS EACH OPTION IN THE DROPDOWN
@@ -40,6 +40,26 @@ import type { Browser, GoToOptions, LaunchOptions, Page, Viewport } from 'puppet
 
         //CLICKS ON SEARCH BUTTON
         await page.locator("#Boton0").filter(button => button.textContent === "Buscar").click();
+
+        let nextButton: ElementHandle | null = await page.$(".botonerasiguienteBtn.ui-button.ui-corner-all.ui-widget.iasWidget.iasButton.ui-state-default.ui-button-text-only.paginationButton");
+
+        while ( nextButton && await nextButton.isVisible() ) {
+            //WAITS UNTIL THE NEXT TABLE IS LOADED
+            await page.waitForNetworkIdle();
+
+            //SELECTS EACH INPUT TYPE RADIO BANK ROW
+            await page.waitForSelector(".ui-widget-content.jqgrow.ui-row-ltr");
+            const bankTableRows: Array<ElementHandle> = await page.$$(".ui-widget-content.jqgrow.ui-row-ltr");
+    
+            for ( const bankTableRow of bankTableRows ) {
+                const td = await bankTableRow.$("td");
+                if ( td ) td.click();
+            }
+
+            //WHEN ALL INPUT TYPE RADIO FROM BANK ROWS ARE CLICKED, IT CLICKS ON THE NEXT BUTTON IF EXISTS
+            nextButton = await page.$(".botonerasiguienteBtn.ui-button.ui-corner-all.ui-widget.iasWidget.iasButton.ui-state-default.ui-button-text-only.paginationButton");
+            if ( nextButton ) nextButton.click();
+        }
     }
 
     await browser.close();
