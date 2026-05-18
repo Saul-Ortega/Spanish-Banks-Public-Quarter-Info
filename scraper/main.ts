@@ -4,7 +4,7 @@ import type { Browser, ElementHandle, GoToOptions, LaunchOptions, Page, Viewport
 (async () => {
     console.log("Initiating web scraper...")
 
-    const launchOptions: LaunchOptions = { headless: false, slowMo: 200 };
+    const launchOptions: LaunchOptions = { headless: false, slowMo: 50 };
     const goToOptions: GoToOptions = { waitUntil: 'networkidle2' };
 
     const browser: Browser = await puppeteer.launch(launchOptions);
@@ -43,7 +43,7 @@ import type { Browser, ElementHandle, GoToOptions, LaunchOptions, Page, Viewport
 
         let nextButton: ElementHandle | null = await page.$(".botonerasiguienteBtn.ui-button.ui-corner-all.ui-widget.iasWidget.iasButton.ui-state-default.ui-button-text-only.paginationButton");
 
-        while ( nextButton && await nextButton.isVisible() ) {
+        while ( nextButton ) {
             //WAITS UNTIL THE NEXT TABLE IS LOADED
             await page.waitForNetworkIdle();
 
@@ -53,14 +53,16 @@ import type { Browser, ElementHandle, GoToOptions, LaunchOptions, Page, Viewport
     
             for ( const bankTableRow of bankTableRows ) {
                 const td = await bankTableRow.$("td");
-                if ( td ) td.click();
+                if ( td ) await td.click();
             }
 
             //WHEN ALL INPUT TYPE RADIO FROM BANK ROWS ARE CLICKED, IT CLICKS ON THE NEXT BUTTON IF EXISTS
             nextButton = await page.$(".botonerasiguienteBtn.ui-button.ui-corner-all.ui-widget.iasWidget.iasButton.ui-state-default.ui-button-text-only.paginationButton");
-            if ( nextButton ) nextButton.click();
+            nextButton && await nextButton.isVisible() ? await nextButton.click() : nextButton = null;
         }
     }
 
+    console.log("Closing web scraper...");
     await browser.close();
+    console.log("Web scraper closed successfully");
 })();
