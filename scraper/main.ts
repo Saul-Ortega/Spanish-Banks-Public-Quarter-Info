@@ -79,7 +79,7 @@ import type { Browser, ElementHandle, GoToOptions, LaunchOptions, Page, Viewport
                 //CHECKS IF IS THE QUARTERLY DECLARATION
                 if ( declarationType === "TRIMESTRAL" ) {
                     console.log("Clicking on declaration type cell...");
-                    tableCellDeclarationType?.click();
+                    await tableCellDeclarationType?.click();
 
                     //CLICKS ON VIEW DECLARATION
                     console.log("Clicking on view declaration...");
@@ -91,13 +91,52 @@ import type { Browser, ElementHandle, GoToOptions, LaunchOptions, Page, Viewport
                     await page.waitForSelector("#Boton");
                     await page.locator("#Boton").click();
 
-                    //CLICKS IN GO BACK BUTTON
-                    console.log("Clicking on go back button...");
-                    await page.waitForSelector("#Boton10");
-                    await page.locator("#Boton10").click();
+                    //GETS ALL BUTTONS WITH THE SPECIFIED SELECTOR
+                    console.log("Getting all operation buttons...");
+                    await page.waitForSelector(".ui-button.ui-corner-all.ui-widget.iasWidget.iasButton");
+                    let operationButtons: Array<ElementHandle> = await page.$$(".ui-button.ui-corner-all.ui-widget.iasWidget.iasButton");
 
-                    //WAITS UNTIL THE TABLE IS FULLY LOADED
-                    console.log("Getting bank table rows...");
+                    //ONLY ITERATES OVER THE TOP 3 BUTTONS THAT CORRESPONDS TO THE OPERATIONS
+                    for ( let operationButtonIndex = 0; operationButtonIndex < 3; operationButtonIndex++ ) {
+                        //CLICKS ON EACH OPERATION BUTTON
+                        const operationType: string = await operationButtons[operationButtonIndex].evaluate(operationButton => operationButton.textContent);
+                        console.log(`Clicking on operation button: ${operationType}...`);
+                        await operationButtons[operationButtonIndex].click();
+
+                        //GETS ALL DETAIL BUTTONS FROM THE OPERATIONS PAGE
+                        console.log("Getting all detail buttons...");
+                        await page.waitForSelector(".ui-button.ui-corner-all.ui-widget.iasWidget.iasButton");
+                        let detailButtons: Array<ElementHandle> = await page.$$(".ui-button.ui-corner-all.ui-widget.iasWidget.iasButton[style*='display: inline']");
+    
+                        for ( let detailButtonIndex = 0; detailButtonIndex < detailButtons.length; detailButtonIndex++ ) {
+                            //CLICKS IN EACH DETAIL BUTTON
+                            console.log(`Detail Button Number: ${1 + detailButtonIndex}`);
+                            await detailButtons[detailButtonIndex].click();
+    
+                            //CLICKS IN GO BACK BUTTON FROM DETAILS PAGE
+                            console.log("Clicking on go back button from details page...");
+                            await page.waitForSelector("#Boton");
+                            await page.locator("#Boton").click();
+
+                            //WAITS UNTIL ALL DETAIL BUTTONS ARE LOADED AGAIN
+                            console.log("Getting all detail buttons again...");
+                            await page.waitForSelector(".ui-button.ui-corner-all.ui-widget.iasWidget.iasButton[style*='display: inline']");
+                            detailButtons = await page.$$(".ui-button.ui-corner-all.ui-widget.iasWidget.iasButton[style*='display: inline']");
+                        }
+
+                        //WAITS UNTIL OPERATION BUTTONS ARE LOADED AGAIN
+                        console.log("Getting operation buttons again...");
+                        await page.waitForSelector(".ui-button.ui-corner-all.ui-widget.iasWidget.iasButton");
+                        operationButtons = await page.$$(".ui-button.ui-corner-all.ui-widget.iasWidget.iasButton");
+                    }
+
+                    //CLICKS ON GO BACK BUTTON FROM C. PASSIVE OPERATIONS
+                    console.log("Clicking on go back button...");
+                    await page.waitForSelector("#Boton0");
+                    await page.locator("#Boton0").click();
+
+                    //WAITS UNTIL THE TABLE IS FULLY LOADED AGAIN
+                    console.log("Getting bank table rows again...");
                     await page.waitForSelector(".ui-widget-content.jqgrow.ui-row-ltr");
                     bankTableRows = await page.$$(".ui-widget-content.jqgrow.ui-row-ltr");
                 }
