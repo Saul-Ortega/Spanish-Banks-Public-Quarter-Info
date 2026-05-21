@@ -34,7 +34,7 @@ public class BankController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedBank);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("id/{id}")
     public ResponseEntity<Bank> updateBank(@PathVariable Long id, @RequestBody Bank updatedBank) {
         Optional<Bank> bankOptional = bankService.updateBank(id, updatedBank);
         return bankOptional.isPresent() ? ResponseEntity.ok(bankOptional.get()) : ResponseEntity.notFound().build();

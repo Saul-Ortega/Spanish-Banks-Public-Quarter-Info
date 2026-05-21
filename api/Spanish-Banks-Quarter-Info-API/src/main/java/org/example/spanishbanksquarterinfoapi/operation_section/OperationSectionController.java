@@ -34,7 +34,7 @@ public class OperationSectionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedOperationSection);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("id/{id}")
     public ResponseEntity<OperationSection> updateOperationSection(@PathVariable Long operationId, @PathVariable Long id, @RequestBody OperationSection updatedOperationSection) {
         Optional<OperationSection> operationSectionOptional = operationSectionService.updateOperationSection(operationId, id, updatedOperationSection);
         return operationSectionOptional.isPresent() ? ResponseEntity.ok(operationSectionOptional.get()) : ResponseEntity.notFound().build();

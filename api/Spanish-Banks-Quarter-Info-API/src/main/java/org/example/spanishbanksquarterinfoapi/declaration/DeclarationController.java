@@ -34,7 +34,7 @@ public class DeclarationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedDeclaration);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("id/{id}")
     public ResponseEntity<Declaration> updateDeclaration(@PathVariable Long bankId, @PathVariable Long id, @RequestBody Declaration updatedDeclaration) {
         Optional<Declaration> declarationOptional = declarationService.updateDeclaration(bankId, id, updatedDeclaration);
         return declarationOptional.isPresent() ? ResponseEntity.ok(declarationOptional.get()) : ResponseEntity.notFound().build();
