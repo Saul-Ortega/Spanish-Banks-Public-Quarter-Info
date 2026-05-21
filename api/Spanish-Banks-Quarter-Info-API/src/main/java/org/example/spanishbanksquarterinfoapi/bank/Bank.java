@@ -13,7 +13,7 @@ public class Bank {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private int entity;
+    private String entity;
     private String denomination;
     @OneToMany(mappedBy = "bank")
     private List<Declaration> declarations;
