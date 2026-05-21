@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/banks")
+@RequestMapping("/api/banks")
 public class BankController {
     private final BankService bankService;
 
@@ -22,7 +22,7 @@ public class BankController {
         return ResponseEntity.ok(bankList);
     }
 
-    @GetMapping("id/{requestedId}")
+    @GetMapping("/{requestedId}")
     public ResponseEntity<Bank> findById(@PathVariable Long requestedId) {
         Optional<Bank> bankOptional = bankService.findById(requestedId);
         return bankOptional.isPresent() ? ResponseEntity.ok(bankOptional.get()) : ResponseEntity.notFound().build();
@@ -34,7 +34,7 @@ public class BankController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedBank);
     }
 
-    @PutMapping("id/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Bank> updateBank(@PathVariable Long id, @RequestBody Bank updatedBank) {
         Optional<Bank> bankOptional = bankService.updateBank(id, updatedBank);
         return bankOptional.isPresent() ? ResponseEntity.ok(bankOptional.get()) : ResponseEntity.notFound().build();

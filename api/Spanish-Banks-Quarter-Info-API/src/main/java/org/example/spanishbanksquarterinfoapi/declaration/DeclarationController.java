@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/banks/{bankId}/declarations")
+@RequestMapping("/api/banks/{bankId}/declarations")
 public class DeclarationController {
     private final DeclarationService declarationService;
 
@@ -22,7 +22,7 @@ public class DeclarationController {
         return ResponseEntity.ok(declarationList);
     }
 
-    @GetMapping("id/{requestedId}")
+    @GetMapping("/{requestedId}")
     public ResponseEntity<Declaration> findById(@PathVariable Long bankId, @PathVariable Long requestedId) {
         Optional<Declaration> declarationOptional = declarationService.findByBankIdAndId(bankId, requestedId);
         return declarationOptional.isPresent() ? ResponseEntity.ok(declarationOptional.get()) : ResponseEntity.notFound().build();
@@ -34,7 +34,7 @@ public class DeclarationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedDeclaration);
     }
 
-    @PutMapping("id/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Declaration> updateDeclaration(@PathVariable Long bankId, @PathVariable Long id, @RequestBody Declaration updatedDeclaration) {
         Optional<Declaration> declarationOptional = declarationService.updateDeclaration(bankId, id, updatedDeclaration);
         return declarationOptional.isPresent() ? ResponseEntity.ok(declarationOptional.get()) : ResponseEntity.notFound().build();

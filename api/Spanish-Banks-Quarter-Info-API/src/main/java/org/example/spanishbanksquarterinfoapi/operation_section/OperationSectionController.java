@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/operations/{operationId}/operation-sections")
+@RequestMapping("/api/operations/{operationId}/operation-sections")
 public class OperationSectionController {
     private final OperationSectionService operationSectionService;
 
@@ -22,7 +22,7 @@ public class OperationSectionController {
         return ResponseEntity.ok(operationSectionList);
     }
 
-    @GetMapping("id/{requestedId}")
+    @GetMapping("/{requestedId}")
     public ResponseEntity<OperationSection> findById(@PathVariable Long operationId, @PathVariable Long requestedId) {
         Optional<OperationSection> operationSectionOptional = operationSectionService.findByOperationIdAndId(operationId, requestedId);
         return operationSectionOptional.isPresent() ? ResponseEntity.ok(operationSectionOptional.get()) : ResponseEntity.notFound().build();
@@ -34,7 +34,7 @@ public class OperationSectionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedOperationSection);
     }
 
-    @PutMapping("id/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<OperationSection> updateOperationSection(@PathVariable Long operationId, @PathVariable Long id, @RequestBody OperationSection updatedOperationSection) {
         Optional<OperationSection> operationSectionOptional = operationSectionService.updateOperationSection(operationId, id, updatedOperationSection);
         return operationSectionOptional.isPresent() ? ResponseEntity.ok(operationSectionOptional.get()) : ResponseEntity.notFound().build();

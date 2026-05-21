@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/operation-sections/{operationSectionId}/operation-subsections")
+@RequestMapping("/api/operation-sections/{operationSectionId}/operation-subsections")
 public class OperationSubsectionController {
     private final OperationSubsectionService operationSubsectionService;
 
@@ -23,7 +23,7 @@ public class OperationSubsectionController {
         return ResponseEntity.ok(operationSubsectionList);
     }
 
-    @GetMapping("id/{requestedId}")
+    @GetMapping("/{requestedId}")
     public ResponseEntity<OperationSubsection> findByOperationSectionIdAndId(@PathVariable Long operationSectionId, @PathVariable Long requestedId) {
         Optional<OperationSubsection> operationSubsectionOptional = operationSubsectionService.findByOperationSectionIdAndId(operationSectionId, requestedId);
         return operationSubsectionOptional.isPresent() ? ResponseEntity.ok(operationSubsectionOptional.get()) : ResponseEntity.notFound().build();
@@ -35,7 +35,7 @@ public class OperationSubsectionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedOperationSubsection);
     }
 
-    @PutMapping("id/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<OperationSubsection> updateOperationSubsection(@PathVariable Long operationSectionId, @PathVariable Long id, @RequestBody OperationSubsection updatedOperationSubsection) {
         Optional<OperationSubsection> operationSubsectionOptional = operationSubsectionService.updateOperationSubsection(operationSectionId, id, updatedOperationSubsection);
         return operationSubsectionOptional.isPresent() ? ResponseEntity.ok(operationSubsectionOptional.get()) : ResponseEntity.notFound().build();
