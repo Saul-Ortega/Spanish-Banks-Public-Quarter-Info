@@ -1,5 +1,6 @@
 package org.example.spanishbanksquarterinfoapi.operation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.example.spanishbanksquarterinfoapi.declaration.Declaration;
@@ -18,6 +19,7 @@ public class Operation {
     @ManyToOne
     @JoinColumn(name = "declaration_id")
     private Declaration declaration;
+    @JsonIgnore
     @OneToMany(mappedBy = "operation")
     private List<OperationSection> operationSections;
 }

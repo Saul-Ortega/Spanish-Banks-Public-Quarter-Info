@@ -1,5 +1,6 @@
 package org.example.spanishbanksquarterinfoapi.bank;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.example.spanishbanksquarterinfoapi.declaration.Declaration;
@@ -15,6 +16,7 @@ public class Bank {
     private Long id;
     private String entity;
     private String denomination;
+    @JsonIgnore
     @OneToMany(mappedBy = "bank")
     private List<Declaration> declarations;
 }
