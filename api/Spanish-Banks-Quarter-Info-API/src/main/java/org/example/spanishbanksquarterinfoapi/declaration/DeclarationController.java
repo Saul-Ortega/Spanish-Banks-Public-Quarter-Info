@@ -1,5 +1,6 @@
 package org.example.spanishbanksquarterinfoapi.declaration;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,13 +30,13 @@ public class DeclarationController {
     }
 
     @PostMapping
-    public ResponseEntity<Declaration> createDeclaration(@PathVariable Long bankId, @RequestBody Declaration newDeclaration) {
+    public ResponseEntity<Declaration> createDeclaration(@PathVariable Long bankId, @Valid @RequestBody Declaration newDeclaration) {
         Declaration savedDeclaration = declarationService.createDeclaration(bankId, newDeclaration);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedDeclaration);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Declaration> updateDeclaration(@PathVariable Long bankId, @PathVariable Long id, @RequestBody Declaration updatedDeclaration) {
+    public ResponseEntity<Declaration> updateDeclaration(@PathVariable Long bankId, @PathVariable Long id, @Valid @RequestBody Declaration updatedDeclaration) {
         Optional<Declaration> declarationOptional = declarationService.updateDeclaration(bankId, id, updatedDeclaration);
         return declarationOptional.isPresent() ? ResponseEntity.ok(declarationOptional.get()) : ResponseEntity.notFound().build();
     }

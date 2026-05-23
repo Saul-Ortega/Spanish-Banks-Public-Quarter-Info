@@ -1,5 +1,6 @@
 package org.example.spanishbanksquarterinfoapi.bank;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,13 +30,13 @@ public class BankController {
     }
 
     @PostMapping
-    public ResponseEntity<Bank> createBank(@RequestBody Bank newBank) {
+    public ResponseEntity<Bank> createBank(@Valid @RequestBody Bank newBank) {
         Bank savedBank = bankService.createBank(newBank);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedBank);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Bank> updateBank(@PathVariable Long id, @RequestBody Bank updatedBank) {
+    public ResponseEntity<Bank> updateBank(@PathVariable Long id, @Valid @RequestBody Bank updatedBank) {
         Optional<Bank> bankOptional = bankService.updateBank(id, updatedBank);
         return bankOptional.isPresent() ? ResponseEntity.ok(bankOptional.get()) : ResponseEntity.notFound().build();
     }

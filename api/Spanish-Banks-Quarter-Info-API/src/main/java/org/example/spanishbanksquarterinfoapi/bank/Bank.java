@@ -2,6 +2,7 @@ package org.example.spanishbanksquarterinfoapi.bank;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.example.spanishbanksquarterinfoapi.declaration.Declaration;
 
@@ -14,6 +15,7 @@ public class Bank {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Size(min = 4)
     private String entity;
     private String denomination;
     @JsonIgnore
