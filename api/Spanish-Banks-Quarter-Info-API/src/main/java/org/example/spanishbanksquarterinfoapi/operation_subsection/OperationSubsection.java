@@ -20,7 +20,6 @@ public class OperationSubsection {
     private boolean practiced;
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> data;
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "operation_section_id")
     private OperationSection operationSection;

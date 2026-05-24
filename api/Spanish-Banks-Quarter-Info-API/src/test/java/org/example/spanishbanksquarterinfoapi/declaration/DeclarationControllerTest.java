@@ -44,7 +44,7 @@ public class DeclarationControllerTest {
     }
 
     @Test
-    void shouldNotReturnADeclarationNotFound() throws Exception {
+    void shouldNotReturnADeclarationWhenNotFound() throws Exception {
         when(declarationService.findByBankIdAndId(2L, 1L)).thenReturn(Optional.empty());
 
         restTestClient.get().uri("/api/banks/2/declarations/1")
@@ -70,5 +70,42 @@ public class DeclarationControllerTest {
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody();
+    }
+
+    @Test
+    void shouldReturnADeclarationWhenUpdated() throws Exception {
+        Declaration declaration = new Declaration();
+        declaration.setId(1L);
+        declaration.setQuarter("2026/1");
+        declaration.setType("TRIMESTRAL");
+        declaration.setDeclarationDate(Date.valueOf("2026-03-30"));
+        declaration.setPublishedDate(Date.valueOf("2026-04-01"));
+        Bank bank = new Bank();
+        bank.setId(1L);
+        declaration.setBank(bank);
+
+        when(declarationService.updateDeclaration(bank.getId(), declaration.getId(), declaration)).thenReturn(Optional.of(declaration));
+
+        restTestClient.put().uri("/api/banks/1/declarations/1")
+                .body(declaration)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody();
+    }
+
+    @Test
+    void shouldNotReturnADeclarationWhenUpdateAndNotExists() throws Exception {
+        Declaration declaration = new Declaration();
+        declaration.setId(1L);
+        Bank bank = new Bank();
+        bank.setId(2L);
+        declaration.setBank(bank);
+
+        when(declarationService.updateDeclaration(bank.getId(), declaration.getId(), declaration)).thenReturn(Optional.empty());
+
+        restTestClient.put().uri("/api/banks/2/declarations/1")
+                .body(declaration)
+                .exchange()
+                .expectStatus().isNotFound();
     }
 }

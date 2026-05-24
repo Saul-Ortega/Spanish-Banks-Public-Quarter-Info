@@ -74,4 +74,42 @@ public class OperationSubsectionControllerTest {
                 .expectStatus().isCreated()
                 .expectBody();
     }
+
+    @Test
+    void shouldReturnAnOperationSubsectionWhenUpdated() throws Exception {
+        OperationSubsection operationSubsection = new OperationSubsection();
+        operationSubsection.setId(1L);
+        operationSubsection.setSection("A.1.1 Préstamos hipotecarios en euros a tipo de interés fijo para adquisición de vivienda habitual");
+        operationSubsection.setPracticed(true);
+        Map<String, Object> data = new HashMap<>();
+        data.put("TAE(%)", 1.86);
+        operationSubsection.setData(data);
+        OperationSection operationSection = new OperationSection();
+        operationSection.setId(1L);
+        operationSubsection.setOperationSection(operationSection);
+
+        when(operationSubsectionService.updateOperationSubsection(operationSection.getId(), operationSubsection.getId(), operationSubsection)).thenReturn(Optional.of(operationSubsection));
+
+        restTestClient.put().uri("/api/operation-sections/1/operation-subsections/1")
+                .body(operationSubsection)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody();
+    }
+
+    @Test
+    void shouldNotReturnAnOperationSubsectionWhenUpdateAndNotExists() throws Exception {
+        OperationSubsection operationSubsection = new OperationSubsection();
+        operationSubsection.setId(1L);
+        OperationSection operationSection = new OperationSection();
+        operationSection.setId(2L);
+        operationSubsection.setOperationSection(operationSection);
+
+        when(operationSubsectionService.updateOperationSubsection(operationSection.getId(), operationSubsection.getId(), operationSubsection)).thenReturn(Optional.empty());
+
+        restTestClient.put().uri("/api/operation-sections/2/operation-subsections/1")
+                .body(operationSubsection)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
 }

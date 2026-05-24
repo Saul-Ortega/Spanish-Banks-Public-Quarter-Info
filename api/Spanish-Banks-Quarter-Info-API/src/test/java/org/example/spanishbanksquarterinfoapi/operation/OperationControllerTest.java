@@ -40,10 +40,10 @@ public class OperationControllerTest {
     }
 
     @Test
-    void shouldNotReturnAnOperationNotFound() throws  Exception {
+    void shouldNotReturnAnOperationWhenNotFound() throws  Exception {
         when(operationService.findByDeclarationIdAndId(2L, 1L)).thenReturn(Optional.empty());
 
-        restTestClient.get().uri("/api/declarations/1/operations/1")
+        restTestClient.get().uri("/api/declarations/2/operations/1")
                 .exchange()
                 .expectStatus().isNotFound();
     }
@@ -63,5 +63,39 @@ public class OperationControllerTest {
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody();
+    }
+
+    @Test
+    void shouldReturnAnOperationWhenUpdateAndNotExists() throws Exception {
+        Operation operation = new Operation();
+        operation.setId(1L);
+        operation.setType("A. Operaciones de activo");
+        Declaration declaration = new Declaration();
+        declaration.setId(1L);
+        operation.setDeclaration(declaration);
+
+        when(operationService.updateOperation(declaration.getId(), operation.getId(), operation)).thenReturn(Optional.of(operation));
+
+        restTestClient.put().uri("/api/declarations/1/operations/1")
+                .body(operation)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody();
+    }
+
+    @Test
+    void shouldNotReturnAnOperationWhenUpdatedAndNotExists() throws Exception {
+        Operation operation = new Operation();
+        operation.setId(1L);
+        Declaration declaration = new Declaration();
+        declaration.setId(2L);
+        operation.setDeclaration(declaration);
+
+        when(operationService.updateOperation(declaration.getId(), operation.getId(), operation)).thenReturn(Optional.empty());
+
+        restTestClient.put().uri("/api/declarations/2/operations/1")
+                .body(operation)
+                .exchange()
+                .expectStatus().isNotFound();
     }
 }

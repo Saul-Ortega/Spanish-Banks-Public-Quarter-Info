@@ -37,7 +37,7 @@ public class BankControllerTest {
     }
 
     @Test
-    void shouldNotReturnABankNotFound() throws Exception {
+    void shouldNotReturnABankWhenNotFound() throws Exception {
         when(bankService.findById(2L)).thenReturn(Optional.empty());
 
         restTestClient.get().uri("/api/banks/2")
@@ -58,5 +58,34 @@ public class BankControllerTest {
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody();
+    }
+
+    @Test
+    void shouldReturnABankWhenUpdated() throws Exception {
+        Bank bank = new Bank();
+        bank.setId(1L);
+        bank.setEntity("2100");
+        bank.setDenomination("CAIXABANK, S.A.");
+
+        when(bankService.updateBank(bank.getId(), bank)).thenReturn(Optional.of(bank));
+
+        restTestClient.put().uri("/api/banks/1")
+                .body(bank)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody();
+    }
+
+    @Test
+    void shouldNotReturnABankWhenUpdateAndNotExists() throws Exception {
+        Bank bank = new Bank();
+        bank.setId(2L);
+
+        when(bankService.updateBank(bank.getId(), bank)).thenReturn(Optional.empty());
+
+        restTestClient.put().uri("/api/banks/2")
+                .body(bank)
+                .exchange()
+                .expectStatus().isNotFound();
     }
 }
