@@ -44,4 +44,19 @@ public class BankControllerTest {
                 .exchange()
                 .expectStatus().isNotFound();
     }
+
+    @Test
+    void shouldReturnABankWhenCreated() throws Exception {
+        Bank bank = new Bank();
+        bank.setEntity("2100");
+        bank.setDenomination("CAIXABANK, S.A.");
+
+        when(bankService.createBank(bank)).thenReturn(bank);
+
+        restTestClient.post().uri("/api/banks")
+                .body(bank)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody();
+    }
 }

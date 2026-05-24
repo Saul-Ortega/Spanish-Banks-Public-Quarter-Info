@@ -51,4 +51,24 @@ public class DeclarationControllerTest {
                 .exchange()
                 .expectStatus().isNotFound();
     }
+
+    @Test
+    void shouldReturnADeclarationWhenCreated() throws Exception {
+        Declaration declaration = new Declaration();
+        declaration.setQuarter("2026/1");
+        declaration.setType("TRIMESTRAL");
+        declaration.setDeclarationDate(Date.valueOf("2026-03-30"));
+        declaration.setPublishedDate(Date.valueOf("2026-04-01"));
+        Bank bank = new Bank();
+        bank.setId(1L);
+        declaration.setBank(bank);
+
+        when(declarationService.createDeclaration(bank.getId(), declaration)).thenReturn(declaration);
+
+        restTestClient.post().uri("/api/banks/1/declarations")
+                .body(declaration)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody();
+    }
 }

@@ -53,4 +53,25 @@ public class OperationSubsectionControllerTest {
                 .exchange()
                 .expectStatus().isNotFound();
     }
+
+    @Test
+    void shouldReturnAnOperationSubsectionWhenCreated() throws Exception {
+        OperationSubsection operationSubsection = new OperationSubsection();
+        operationSubsection.setSection("A.1.1 Préstamos hipotecarios en euros a tipo de interés fijo para adquisición de vivienda habitual");
+        operationSubsection.setPracticed(true);
+        Map<String, Object> data = new HashMap<>();
+        data.put("TAE(%)", 1.86);
+        operationSubsection.setData(data);
+        OperationSection operationSection = new OperationSection();
+        operationSection.setId(1L);
+        operationSubsection.setOperationSection(operationSection);
+
+        when(operationSubsectionService.createOperationSubsection(operationSection.getId(), operationSubsection)).thenReturn(operationSubsection);
+
+        restTestClient.post().uri("/api/operation-sections/1/operation-subsections")
+                .body(operationSubsection)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody();
+    }
 }

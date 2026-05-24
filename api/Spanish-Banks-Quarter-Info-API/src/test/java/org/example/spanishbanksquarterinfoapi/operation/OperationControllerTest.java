@@ -47,4 +47,21 @@ public class OperationControllerTest {
                 .exchange()
                 .expectStatus().isNotFound();
     }
+
+    @Test
+    void shouldReturnAnOperationWhenCreated() throws Exception {
+        Operation operation = new Operation();
+        operation.setType("A. Operaciones de activo");
+        Declaration declaration = new Declaration();
+        declaration.setId(1L);
+        operation.setDeclaration(declaration);
+
+        when(operationService.createOperation(declaration.getId(), operation)).thenReturn(operation);
+
+        restTestClient.post().uri("/api/declarations/1/operations")
+                .body(operation)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody();
+    }
 }

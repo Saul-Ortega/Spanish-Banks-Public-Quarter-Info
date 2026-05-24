@@ -47,4 +47,21 @@ public class OperationSectionControllerTest {
                 .exchange()
                 .expectStatus().isNotFound();
     }
+
+    @Test
+    void shouldReturnAnOperationSectionWhenCreated() throws Exception {
+        OperationSection operationSection = new OperationSection();
+        operationSection.setSection("A.1 Préstamos Hipotecarios");
+        Operation operation = new Operation();
+        operation.setId(1L);
+        operationSection.setOperation(operation);
+
+        when(operationSectionService.createOperationSection(operation.getId(), operationSection)).thenReturn(operationSection);
+
+        restTestClient.post().uri("/api/operations/1/operation-sections")
+                .body(operationSection)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody();
+    }
 }
