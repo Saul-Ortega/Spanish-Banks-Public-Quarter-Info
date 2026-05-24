@@ -46,6 +46,31 @@ public class BankControllerTest {
     }
 
     @Test
+    void shouldReturnABankWhenDenominationFound() throws Exception {
+        Bank bank = new Bank();
+        bank.setId(1L);
+        bank.setEntity("2100");
+        bank.setDenomination("CAIXABANK, S.A.");
+
+        when(bankService.findByDenomination(bank.getDenomination())).thenReturn(Optional.of(bank));
+
+        restTestClient.get().uri("/api/banks/denomination/CAIXABANK, S.A.")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.denomination").isEqualTo("CAIXABANK, S.A.");
+    }
+
+    @Test
+    void shouldNotReturnABankWhenDenominationNotFound() throws Exception {
+        when(bankService.findByDenomination("BANK NOT EXISTS, S.L.")).thenReturn(Optional.empty());
+
+        restTestClient.get().uri("/api/banks/denomination/BANK NOT EXISTS, S.L.")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
     void shouldReturnABankWhenCreated() throws Exception {
         Bank bank = new Bank();
         bank.setEntity("2100");
