@@ -15,7 +15,7 @@ public class OperationSection {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String section;
+    private String type;
     @ManyToOne
     @JoinColumn(name = "operation_id")
     private Operation operation;

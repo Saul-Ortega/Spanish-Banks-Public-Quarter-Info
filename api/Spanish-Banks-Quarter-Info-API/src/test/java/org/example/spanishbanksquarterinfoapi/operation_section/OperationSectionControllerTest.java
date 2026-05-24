@@ -25,7 +25,7 @@ public class OperationSectionControllerTest {
     void shouldReturnAnOperationSection() throws Exception {
         OperationSection operationSection = new OperationSection();
         operationSection.setId(1L);
-        operationSection.setSection("A.1 Préstamos Hipotecarios");
+        operationSection.setType("A.1 Préstamos Hipotecarios");
         Operation operation = new Operation();
         operation.setId(1L);
         operationSection.setOperation(operation);
@@ -36,7 +36,7 @@ public class OperationSectionControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.section").isEqualTo("A.1 Préstamos Hipotecarios");
+                .jsonPath("$.type").isEqualTo("A.1 Préstamos Hipotecarios");
     }
 
     @Test
@@ -51,7 +51,7 @@ public class OperationSectionControllerTest {
     @Test
     void shouldReturnAnOperationSectionWhenCreated() throws Exception {
         OperationSection operationSection = new OperationSection();
-        operationSection.setSection("A.1 Préstamos Hipotecarios");
+        operationSection.setType("A.1 Préstamos Hipotecarios");
         Operation operation = new Operation();
         operation.setId(1L);
         operationSection.setOperation(operation);
@@ -69,7 +69,7 @@ public class OperationSectionControllerTest {
     void shouldReturnAnOperationSectionWhenUpdated() throws Exception {
         OperationSection operationSection = new OperationSection();
         operationSection.setId(1L);
-        operationSection.setSection("A.1 Préstamos Hipotecarios");
+        operationSection.setType("A.1 Préstamos Hipotecarios");
         Operation operation = new Operation();
         operation.setId(1L);
         operationSection.setOperation(operation);

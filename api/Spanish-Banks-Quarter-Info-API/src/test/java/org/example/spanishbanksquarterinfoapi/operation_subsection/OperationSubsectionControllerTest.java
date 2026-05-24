@@ -27,7 +27,7 @@ public class OperationSubsectionControllerTest {
     void shouldReturnAnOperationSubsection() throws Exception {
         OperationSubsection operationSubsection = new OperationSubsection();
         operationSubsection.setId(1L);
-        operationSubsection.setSection("A.1.1 Préstamos hipotecarios en euros a tipo de interés fijo para adquisición de vivienda habitual");
+        operationSubsection.setType("A.1.1 Préstamos hipotecarios en euros a tipo de interés fijo para adquisición de vivienda habitual");
         operationSubsection.setPracticed(true);
         Map<String, Object> data = new HashMap<>();
         data.put("TAE(%)", 1.86);
@@ -57,7 +57,7 @@ public class OperationSubsectionControllerTest {
     @Test
     void shouldReturnAnOperationSubsectionWhenCreated() throws Exception {
         OperationSubsection operationSubsection = new OperationSubsection();
-        operationSubsection.setSection("A.1.1 Préstamos hipotecarios en euros a tipo de interés fijo para adquisición de vivienda habitual");
+        operationSubsection.setType("A.1.1 Préstamos hipotecarios en euros a tipo de interés fijo para adquisición de vivienda habitual");
         operationSubsection.setPracticed(true);
         Map<String, Object> data = new HashMap<>();
         data.put("TAE(%)", 1.86);
@@ -79,7 +79,7 @@ public class OperationSubsectionControllerTest {
     void shouldReturnAnOperationSubsectionWhenUpdated() throws Exception {
         OperationSubsection operationSubsection = new OperationSubsection();
         operationSubsection.setId(1L);
-        operationSubsection.setSection("A.1.1 Préstamos hipotecarios en euros a tipo de interés fijo para adquisición de vivienda habitual");
+        operationSubsection.setType("A.1.1 Préstamos hipotecarios en euros a tipo de interés fijo para adquisición de vivienda habitual");
         operationSubsection.setPracticed(true);
         Map<String, Object> data = new HashMap<>();
         data.put("TAE(%)", 1.86);

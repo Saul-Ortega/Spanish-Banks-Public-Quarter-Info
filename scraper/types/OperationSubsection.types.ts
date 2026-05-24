@@ -1,5 +1,5 @@
 export interface OperationSubsection {
-    section: string;
+    type: string;
     practiced: boolean;
     data: Record<string, any>;
 }

@@ -32,7 +32,7 @@ public class OperationSubsectionService {
     public Optional<OperationSubsection> updateOperationSubsection(Long operationSectionId, Long id, OperationSubsection updatedSubsection) {
         return operationSubsectionRepository.findById(id)
                 .map(operationSubsection -> {
-                    operationSubsection.setSection(updatedSubsection.getSection());
+                    operationSubsection.setType(updatedSubsection.getType());
                     operationSubsection.setPracticed(updatedSubsection.isPracticed());
                     operationSubsection.setData(updatedSubsection.getData());
                     operationSubsection.setOperationSection(operationSectionRepository.getReferenceById(operationSectionId));

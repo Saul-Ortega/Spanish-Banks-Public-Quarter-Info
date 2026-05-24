@@ -1,3 +1,3 @@
 export interface OperationSection {
-    section: string;
+    type: string;
 }
