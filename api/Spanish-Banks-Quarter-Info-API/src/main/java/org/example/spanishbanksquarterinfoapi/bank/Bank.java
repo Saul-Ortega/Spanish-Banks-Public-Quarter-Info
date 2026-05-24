@@ -17,6 +17,7 @@ public class Bank {
     private Long id;
     @Size(min = 4)
     private String entity;
+    @Column(unique = true)
     private String denomination;
     @JsonIgnore
     @OneToMany(mappedBy = "bank")

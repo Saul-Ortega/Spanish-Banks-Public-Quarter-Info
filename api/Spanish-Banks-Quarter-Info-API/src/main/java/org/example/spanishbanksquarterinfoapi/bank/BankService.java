@@ -21,6 +21,10 @@ public class BankService {
         return bankRepository.findAll();
     }
 
+    public Optional<Bank> findByDenomination(String denomination) {
+        return bankRepository.findByDenomination(denomination);
+    }
+
     public Bank createBank(Bank bank) {
         return bankRepository.save(bank);
     }

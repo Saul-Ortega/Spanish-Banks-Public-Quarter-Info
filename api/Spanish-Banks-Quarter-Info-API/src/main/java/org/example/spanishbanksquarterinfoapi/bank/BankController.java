@@ -29,6 +29,12 @@ public class BankController {
         return bankOptional.isPresent() ? ResponseEntity.ok(bankOptional.get()) : ResponseEntity.notFound().build();
     }
 
+    @GetMapping("/denomination/{requestedDenomination}")
+    public ResponseEntity<Bank> findByDenomination(@PathVariable String requestedDenomination) {
+        Optional<Bank> bankOptional = bankService.findByDenomination(requestedDenomination);
+        return bankOptional.isPresent() ? ResponseEntity.ok(bankOptional.get()) : ResponseEntity.notFound().build();
+    }
+
     @PostMapping
     public ResponseEntity<Bank> createBank(@Valid @RequestBody Bank newBank) {
         Bank savedBank = bankService.createBank(newBank);
