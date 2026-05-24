@@ -16,6 +16,7 @@ public class OperationSubsection {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    private String section;
     private boolean practiced;
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> data;
