@@ -1,7 +1,13 @@
 {
+	"scripts": {
+		"start": "tsx main.ts"
+	},
 	"dependencies": {
 		"@types/node": "^25.9.0",
 		"puppeteer": "^25.0.2"
 	},
-	"type": "module"
+	"type": "module",
+	"devDependencies": {
+		"tsx": "^4.22.3"
+	}
 }

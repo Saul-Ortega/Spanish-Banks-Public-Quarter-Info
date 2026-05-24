@@ -1,6 +1,7 @@
 import puppeteer from 'puppeteer'
 import type { Browser, ElementHandle, GoToOptions, LaunchOptions, Page, Viewport } from 'puppeteer';
 import process from 'node:process';
+import { Bank } from './types/Bank.types';
 
 (async () => {
     process.stdout.write("Initiating web scraper...");
@@ -80,10 +81,16 @@ import process from 'node:process';
             process.stdout.write("\tDone\n");
     
             for ( let bankRowIndex = 0; bankRowIndex < bankTableRows.length; bankRowIndex++ ) {
-                //GETS THE DECLARATION TYPE COLUMN OF THE BANK TABLE ROW
-                process.stdout.write("Getting bank declaration type...");
+                //GETS THE ENITITY, DENOMINATION AND DECLARATION TYPE COLUMNS OF THE BANK TABLE ROW
+                process.stdout.write("Getting bank entity, denomination and declaration type...");
+                const tableCellEntity: ElementHandle | null = await bankTableRows[bankRowIndex].$("[aria-describedby=TableDataRejillaConPaginacionEnServidorResultadosConsulta_codigo]");
+                const tableCellDenomination: ElementHandle | null = await bankTableRows[bankRowIndex].$("[aria-describedby=TableDataRejillaConPaginacionEnServidorResultadosConsulta_denominacion]");
                 const tableCellDeclarationType: ElementHandle | null = await bankTableRows[bankRowIndex].$("[aria-describedby=TableDataRejillaConPaginacionEnServidorResultadosConsulta_denom_tipo]");
+                let entity: string = "";
+                let denomination: string = "";
                 let declarationType: string = "";
+                if ( tableCellEntity ) entity = await tableCellEntity.evaluate(td => td.textContent);
+                if ( tableCellDenomination ) denomination = await tableCellDenomination.evaluate(td => td.textContent);
                 if ( tableCellDeclarationType ) declarationType = await tableCellDeclarationType.evaluate(td => td.textContent);
                 process.stdout.write("\tDone\n");
 
@@ -91,6 +98,28 @@ import process from 'node:process';
 
                 //CHECKS IF IS THE QUARTERLY DECLARATION
                 if ( declarationType === "TRIMESTRAL" ) {
+                    const bank: Bank = { entity, denomination };
+
+                    process.stdout.write("Checking if bank exists in database...");
+                    const bankAlreadyExists: boolean | void = await fetch(`http://localhost:8080/api/banks/denomination/${bank.denomination}`)
+                    .then((response) => response.ok)
+                    .catch(error => console.error(error));
+                    process.stdout.write("\tDone\n");
+
+                    //CHECKS IF THE BANK DOES NOT EXIST AND SAVES IT IN DATABASE 
+                    if ( !bankAlreadyExists ) {
+                        process.stdout.write("Saving bank in database...");
+                        const response: Response | void =  await fetch('http://localhost:8080/api/banks', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(bank)
+                        }).catch(error => console.error(error));
+
+                        response?.ok ? process.stdout.write("\tSaved\n") : process.stdout.write("\tNot Saved\n");
+                    } else {
+                        process.stdout.write("Bank Already Exists\n");
+                    }
+
                     process.stdout.write("Clicking on declaration type cell...");
                     await tableCellDeclarationType?.click();
                     process.stdout.write("\tDone\n");
