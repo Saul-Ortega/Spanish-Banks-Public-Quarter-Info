@@ -49,6 +49,40 @@ public class OperationSectionControllerTest {
     }
 
     @Test
+    void shouldReturnAnOperationSectionWhenTypeFound() throws Exception {
+        OperationSection operationSection = new OperationSection();
+        operationSection.setId(1L);
+        operationSection.setType("A.1 Préstamos Hipotecarios");
+        Operation operation = new Operation();
+        operation.setId(1L);
+        operationSection.setOperation(operation);
+
+        when(operationSectionService.findByType(operationSection.getType())).thenReturn(Optional.of(operationSection));
+
+        restTestClient.get().uri("/api/operations/1/operation-sections?type=A.1 Préstamos Hipotecarios")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.type").isEqualTo("A.1 Préstamos Hipotecarios");
+    }
+
+    @Test
+    void shouldNotReturnAnOperationSectionWhenTypeNotFound() throws Exception {
+        OperationSection operationSection = new OperationSection();
+        operationSection.setId(1L);
+        operationSection.setType("A.1 Préstamos Hipotecarios");
+        Operation operation = new Operation();
+        operation.setId(2L);
+        operationSection.setOperation(operation);
+
+        when(operationSectionService.findByType(operationSection.getType())).thenReturn(Optional.empty());
+
+        restTestClient.get().uri("/api/operations/2/operation-sections?type=A.1 Préstamos Hipotecarios")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
     void shouldReturnAnOperationSectionWhenCreated() throws Exception {
         OperationSection operationSection = new OperationSection();
         operationSection.setType("A.1 Préstamos Hipotecarios");
