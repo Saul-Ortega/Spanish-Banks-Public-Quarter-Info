@@ -2,7 +2,9 @@ import puppeteer from 'puppeteer'
 import type { Browser, ElementHandle, GoToOptions, LaunchOptions, Page, Viewport } from 'puppeteer';
 import process from 'node:process';
 import { Bank } from './types/Bank.types';
+import { Declaration } from './types/Declaration.types';
 import { fetchBankByDenomination, saveBank } from './services/Bank.service';
+import { fetchDeclarationByQuarter, saveDeclaration } from './services/Declaration.service';
 
 (async () => {
     process.stdout.write("Initiating web scraper...");
@@ -86,12 +88,15 @@ import { fetchBankByDenomination, saveBank } from './services/Bank.service';
                 process.stdout.write("Getting bank entity, denomination and declaration type...");
                 const tableCellEntity: ElementHandle | null = await bankTableRows[bankRowIndex].$("[aria-describedby=TableDataRejillaConPaginacionEnServidorResultadosConsulta_codigo]");
                 const tableCellDenomination: ElementHandle | null = await bankTableRows[bankRowIndex].$("[aria-describedby=TableDataRejillaConPaginacionEnServidorResultadosConsulta_denominacion]");
+                const tableCellDeclarationDate: ElementHandle | null = await bankTableRows[bankRowIndex].$("[aria-describedby=TableDataRejillaConPaginacionEnServidorResultadosConsulta_fechaDeclaracion]");
                 const tableCellDeclarationType: ElementHandle | null = await bankTableRows[bankRowIndex].$("[aria-describedby=TableDataRejillaConPaginacionEnServidorResultadosConsulta_denom_tipo]");
                 let entity: string = "";
                 let denomination: string = "";
+                let declarationDate: string = "";
                 let declarationType: string = "";
                 if ( tableCellEntity ) entity = await tableCellEntity.evaluate(td => td.textContent);
                 if ( tableCellDenomination ) denomination = await tableCellDenomination.evaluate(td => td.textContent);
+                if ( tableCellDeclarationDate ) declarationDate = (await tableCellDeclarationDate.evaluate(td => td.textContent)).split('/').reverse().join('-');
                 if ( tableCellDeclarationType ) declarationType = await tableCellDeclarationType.evaluate(td => td.textContent);
                 process.stdout.write("\tDone\n");
 
@@ -136,6 +141,38 @@ import { fetchBankByDenomination, saveBank } from './services/Bank.service';
                     await page.waitForSelector("#Boton");
                     await page.locator("#Boton").click();
                     process.stdout.write("\tDone\n");
+
+                    process.stdout.write("Getting published date...");
+                    const inputPublishedDate: ElementHandle | null = await page.waitForSelector("#PConsultarPDF_CajaFechaModificacion")
+                    let publishedDate: string = "";
+                    if ( inputPublishedDate ) publishedDate = (await inputPublishedDate.evaluate(input => (input as HTMLInputElement).value)).split('/').reverse().join('-');
+                    process.stdout.write("\tDone\n");
+
+                    let declaration: Declaration = { bankId: bank.id, quarter: optionValue, type: declarationType, declarationDate, publishedDate};
+
+                    process.stdout.write("Checking if declaration exists in database...");
+                    let foundDeclaration: Declaration | null = null;
+                    if ( declaration.bankId ) {
+
+                        foundDeclaration = await fetchDeclarationByQuarter(declaration.bankId, declaration.quarter);
+                    }
+                    process.stdout.write("\tDone\n");
+
+                    //CHECKS IF THE DECLARATION DOES NOT EXIST AND SAVES IT IN DATABASE 
+                    if ( !foundDeclaration ) {
+                        process.stdout.write("Saving declaration in database...");
+                        const savedDeclaration: Declaration | null = await saveDeclaration(declaration);
+
+                        if ( savedDeclaration ) {
+                            declaration = savedDeclaration;
+                            process.stdout.write("\tSaved\n");
+                        } else {
+                            process.stdout.write("\tNot Saved\n");
+                        }
+                    } else {
+                        declaration.id = foundDeclaration.id;
+                        process.stdout.write("Declaration Already Exists\n");
+                    }
 
                     //GETS ALL BUTTONS WITH THE SPECIFIED SELECTOR
                     process.stdout.write("Getting all operation buttons...");
