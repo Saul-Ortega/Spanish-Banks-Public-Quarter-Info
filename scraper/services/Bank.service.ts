@@ -1,7 +1,7 @@
 import { Bank } from "../types/Bank.types";
 
 export async function fetchBankByDenomination(denomination: string): Promise<Bank | null> {
-    return await fetch(`http://localhost:8080/api/banks/denomination/${denomination}`)
+    return await fetch(`http://localhost:8080/api/banks?denomination=${denomination}`)
         .then((response) => response.ok ? response.json() : null)
         .catch(error => {
             console.error(error);
