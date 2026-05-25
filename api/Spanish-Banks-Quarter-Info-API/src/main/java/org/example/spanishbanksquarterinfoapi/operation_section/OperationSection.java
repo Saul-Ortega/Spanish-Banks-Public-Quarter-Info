@@ -1,12 +1,12 @@
 package org.example.spanishbanksquarterinfoapi.operation_section;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.example.spanishbanksquarterinfoapi.operation.Operation;
-import org.example.spanishbanksquarterinfoapi.operation_subsection.OperationSubsection;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
-import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "operation_sections")
@@ -16,10 +16,10 @@ public class OperationSection {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String type;
+    private boolean practiced;
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String, Object> data;
     @ManyToOne
     @JoinColumn(name = "operation_id")
     private Operation operation;
-    @JsonIgnore
-    @OneToMany(mappedBy = "operationSection")
-    private List<OperationSubsection> operationSubsections;
 }
