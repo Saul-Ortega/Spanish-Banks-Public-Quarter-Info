@@ -24,6 +24,10 @@ public class OperationSectionService {
         return operationSectionRepository.findByOperationId(operationId);
     }
 
+    public Optional<OperationSection> findByType(String type) {
+        return operationSectionRepository.findByType(type);
+    }
+
     public OperationSection createOperationSection(Long operationId, OperationSection operationSection) {
         operationSection.setOperation(operationRepository.getReferenceById(operationId));
         return operationSectionRepository.save(operationSection);

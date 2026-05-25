@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface OperationSectionRepository extends JpaRepository<OperationSection, Long> {
     Optional<OperationSection> findByOperationIdAndId(Long operationId, Long id);
     List<OperationSection> findByOperationId(Long operationId);
+    Optional<OperationSection> findByType(String type);
 }
