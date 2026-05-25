@@ -29,6 +29,12 @@ public class DeclarationController {
         return declarationOptional.isPresent() ? ResponseEntity.ok(declarationOptional.get()) : ResponseEntity.notFound().build();
     }
 
+    @GetMapping(params = "quarter")
+    public ResponseEntity<Declaration> findByQuarter(@RequestParam String quarter) {
+        Optional<Declaration> declarationOptional = declarationService.findByQuarter(quarter);
+        return declarationOptional.isPresent() ? ResponseEntity.ok(declarationOptional.get()) : ResponseEntity.notFound().build();
+    }
+
     @PostMapping
     public ResponseEntity<Declaration> createDeclaration(@PathVariable Long bankId, @Valid @RequestBody Declaration newDeclaration) {
         Declaration savedDeclaration = declarationService.createDeclaration(bankId, newDeclaration);

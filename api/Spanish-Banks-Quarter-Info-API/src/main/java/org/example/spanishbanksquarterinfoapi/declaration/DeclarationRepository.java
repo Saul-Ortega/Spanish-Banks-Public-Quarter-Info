@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface DeclarationRepository extends JpaRepository<Declaration, Long> {
     Optional<Declaration> findByBankIdAndId(Long bankId, Long id);
     List<Declaration> findByBankId(Long bankId);
+    Optional<Declaration> findByQuarter(String quarter);
 }

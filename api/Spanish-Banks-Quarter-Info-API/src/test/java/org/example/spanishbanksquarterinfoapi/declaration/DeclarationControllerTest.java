@@ -53,6 +53,43 @@ public class DeclarationControllerTest {
     }
 
     @Test
+    void shouldReturnADeclarationWhenQuarterFound() throws Exception {
+        Declaration declaration = new Declaration();
+        declaration.setId(1L);
+        declaration.setQuarter("2026/1");
+        declaration.setType("TRIMESTRAL");
+        declaration.setDeclarationDate(Date.valueOf("2026-03-30"));
+        declaration.setPublishedDate(Date.valueOf("2026-04-01"));
+        Bank bank = new Bank();
+        bank.setId(1L);
+        declaration.setBank(bank);
+
+        when(declarationService.findByQuarter(declaration.getQuarter())).thenReturn(Optional.of(declaration));
+
+        restTestClient.get().uri("/api/banks/1/declarations?quarter=2026/1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.quarter").isEqualTo("2026/1");
+    }
+
+    @Test
+    void shouldNotReturnADeclarationWhenQuarterNotFound() throws Exception {
+        Declaration declaration = new Declaration();
+        declaration.setId(1L);
+        declaration.setQuarter("2026/1");
+        Bank bank = new Bank();
+        bank.setId(2L);
+        declaration.setBank(bank);
+
+        when(declarationService.findByQuarter(declaration.getQuarter())).thenReturn(Optional.empty());
+
+        restTestClient.get().uri("/api/banks/2/declarations?quarter=2026/1")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
     void shouldReturnADeclarationWhenCreated() throws Exception {
         Declaration declaration = new Declaration();
         declaration.setQuarter("2026/1");

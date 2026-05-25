@@ -25,6 +25,10 @@ public class DeclarationService {
         return declarationRepository.findByBankId(bankId);
     }
 
+    public Optional<Declaration> findByQuarter(String quarter) {
+        return declarationRepository.findByQuarter(quarter);
+    }
+
     public Declaration createDeclaration(Long bankId, Declaration declaration) {
         declaration.setBank(bankRepository.getReferenceById(bankId));
         return declarationRepository.save(declaration);
