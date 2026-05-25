@@ -54,7 +54,7 @@ public class BankControllerTest {
 
         when(bankService.findByDenomination(bank.getDenomination())).thenReturn(Optional.of(bank));
 
-        restTestClient.get().uri("/api/banks/denomination/CAIXABANK, S.A.")
+        restTestClient.get().uri("/api/banks?denomination=CAIXABANK, S.A.")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -65,7 +65,7 @@ public class BankControllerTest {
     void shouldNotReturnABankWhenDenominationNotFound() throws Exception {
         when(bankService.findByDenomination("BANK NOT EXISTS, S.L.")).thenReturn(Optional.empty());
 
-        restTestClient.get().uri("/api/banks/denomination/BANK NOT EXISTS, S.L.")
+        restTestClient.get().uri("/api/banks?denomination=BANK NOT EXISTS, S.L.")
                 .exchange()
                 .expectStatus().isNotFound();
     }

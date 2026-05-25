@@ -29,9 +29,9 @@ public class BankController {
         return bankOptional.isPresent() ? ResponseEntity.ok(bankOptional.get()) : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/denomination/{requestedDenomination}")
-    public ResponseEntity<Bank> findByDenomination(@PathVariable String requestedDenomination) {
-        Optional<Bank> bankOptional = bankService.findByDenomination(requestedDenomination);
+    @GetMapping(params = "denomination")
+    public ResponseEntity<Bank> findByDenomination(@RequestParam String denomination) {
+        Optional<Bank> bankOptional = bankService.findByDenomination(denomination);
         return bankOptional.isPresent() ? ResponseEntity.ok(bankOptional.get()) : ResponseEntity.notFound().build();
     }
 
