@@ -24,6 +24,10 @@ public class OperationService {
         return operationRepository.findByDeclarationId(declarationId);
     }
 
+    public Optional<Operation> findByType(String type) {
+        return operationRepository.findByType(type);
+    }
+
     public Operation createOperation(Long declarationId, Operation operation) {
         operation.setDeclaration(declarationRepository.getReferenceById(declarationId));
         return operationRepository.save(operation);

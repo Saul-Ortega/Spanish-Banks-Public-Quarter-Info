@@ -28,6 +28,12 @@ public class OperationController {
         return operationOptional.isPresent() ? ResponseEntity.ok(operationOptional.get()) : ResponseEntity.notFound().build();
     }
 
+    @GetMapping(params = "type")
+    public ResponseEntity<Operation> findByType(@RequestParam String type) {
+        Optional<Operation> operationOptional = operationService.findByType(type);
+        return operationOptional.isPresent() ? ResponseEntity.ok(operationOptional.get()) : ResponseEntity.notFound().build();
+    }
+
     @PostMapping
     public ResponseEntity<Operation> createOperation(@PathVariable Long declarationId, @RequestBody Operation newOperation) {
         Operation savedOperation = operationService.createOperation(declarationId, newOperation);
