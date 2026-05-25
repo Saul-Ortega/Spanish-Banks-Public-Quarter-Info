@@ -2,6 +2,7 @@ import puppeteer from 'puppeteer'
 import type { Browser, ElementHandle, GoToOptions, LaunchOptions, Page, Viewport } from 'puppeteer';
 import process from 'node:process';
 import { Bank } from './types/Bank.types';
+import { fetchBankByDenomination, saveBank } from './services/Bank.service';
 
 (async () => {
     process.stdout.write("Initiating web scraper...");
@@ -96,30 +97,30 @@ import { Bank } from './types/Bank.types';
 
                 process.stdout.write(`Page Number: ${pageNumber}, Table Row: ${1 + bankRowIndex}, Declaration Type: ${declarationType}\n`);
 
+                let bank: Bank = { entity, denomination };
+
+                process.stdout.write("Checking if bank exists in database...");
+                const foundBank: Bank | null = await fetchBankByDenomination(bank.denomination);
+                process.stdout.write("\tDone\n");
+
+                //CHECKS IF THE BANK DOES NOT EXIST AND SAVES IT IN DATABASE 
+                if ( !foundBank ) {
+                    process.stdout.write("Saving bank in database...");
+                    const savedBank: Bank | null = await saveBank(bank);
+
+                    if ( savedBank ) {
+                        bank = savedBank;
+                        process.stdout.write("\tSaved\n");
+                    } else {
+                        process.stdout.write("\tNot Saved\n");
+                    }
+                } else {
+                    bank.id = foundBank.id;
+                    process.stdout.write("Bank Already Exists\n");
+                }
+
                 //CHECKS IF IS THE QUARTERLY DECLARATION
                 if ( declarationType === "TRIMESTRAL" ) {
-                    const bank: Bank = { entity, denomination };
-
-                    process.stdout.write("Checking if bank exists in database...");
-                    const bankAlreadyExists: boolean | void = await fetch(`http://localhost:8080/api/banks/denomination/${bank.denomination}`)
-                    .then((response) => response.ok)
-                    .catch(error => console.error(error));
-                    process.stdout.write("\tDone\n");
-
-                    //CHECKS IF THE BANK DOES NOT EXIST AND SAVES IT IN DATABASE 
-                    if ( !bankAlreadyExists ) {
-                        process.stdout.write("Saving bank in database...");
-                        const response: Response | void =  await fetch('http://localhost:8080/api/banks', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(bank)
-                        }).catch(error => console.error(error));
-
-                        response?.ok ? process.stdout.write("\tSaved\n") : process.stdout.write("\tNot Saved\n");
-                    } else {
-                        process.stdout.write("Bank Already Exists\n");
-                    }
-
                     process.stdout.write("Clicking on declaration type cell...");
                     await tableCellDeclarationType?.click();
                     process.stdout.write("\tDone\n");
