@@ -3,8 +3,10 @@ import type { Browser, ElementHandle, GoToOptions, LaunchOptions, Page, Viewport
 import process from 'node:process';
 import { Bank } from './types/Bank.types';
 import { Declaration } from './types/Declaration.types';
+import { Operation } from './types/Operation.types';
 import { fetchBankByDenomination, saveBank } from './services/Bank.service';
 import { fetchDeclarationByQuarter, saveDeclaration } from './services/Declaration.service';
+import { fetchOperationByType, saveOperation } from './services/Operation.service';
 
 (async () => {
     process.stdout.write("Initiating web scraper...");
@@ -187,6 +189,31 @@ import { fetchDeclarationByQuarter, saveDeclaration } from './services/Declarati
                         process.stdout.write(`Clicking on operation button: ${operationType}...`);
                         await operationButtons[operationButtonIndex].click();
                         process.stdout.write("\tDone\n");
+
+                        let operation: Operation = { declarationId: declaration.id, type: operationType };
+
+                        process.stdout.write("Checking if operation exists in database...");
+                        let foundOperation: Operation | null = null;
+                        if ( operation.declarationId ) {
+                            foundOperation = await fetchOperationByType(operation.declarationId, operation.type);
+                        }
+                        process.stdout.write("\tDone\n");
+
+                        //CHECKS IF THE OPERATION DOES NOT EXIST AND SAVES IT IN DATABASE 
+                        if ( !foundOperation ) {
+                            process.stdout.write("Saving operation in database...");
+                            const savedOperation: Operation | null = await saveOperation(operation)
+
+                            if ( savedOperation ) {
+                                operation = savedOperation;
+                                process.stdout.write("\tSaved\n");
+                            } else {
+                                process.stdout.write("\tNot Saved\n");
+                            }
+                        } else {
+                            operation.id = foundOperation.id;
+                            process.stdout.write("Operation Already Exists\n");
+                        }
 
                         //GETS ALL DETAIL BUTTONS FROM THE OPERATIONS PAGE
                         process.stdout.write("Getting all detail buttons...");
