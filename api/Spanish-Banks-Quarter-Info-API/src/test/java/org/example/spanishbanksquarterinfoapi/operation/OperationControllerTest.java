@@ -49,6 +49,40 @@ public class OperationControllerTest {
     }
 
     @Test
+    void shouldReturnAnOperationWhenTypeFound() throws Exception {
+        Operation operation = new Operation();
+        operation.setId(1L);
+        operation.setType("A. Operaciones de activo");
+        Declaration declaration = new Declaration();
+        declaration.setId(1L);
+        operation.setDeclaration(declaration);
+
+        when(operationService.findByType(operation.getType())).thenReturn(Optional.of(operation));
+
+        restTestClient.get().uri("/api/declarations/1/operations?type=A. Operaciones de activo")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.type").isEqualTo("A. Operaciones de activo");
+    }
+
+    @Test
+    void shouldNotReturnAnOperationWhenTypeNotFound() throws Exception {
+        Operation operation = new Operation();
+        operation.setId(1L);
+        operation.setType("A. Operaciones de activo");
+        Declaration declaration = new Declaration();
+        declaration.setId(1L);
+        operation.setDeclaration(declaration);
+
+        when(operationService.findByType(operation.getType())).thenReturn(Optional.empty());
+
+        restTestClient.get().uri("/api/declarations/2/operations?type=A. Operaciones de activo")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
     void shouldReturnAnOperationWhenCreated() throws Exception {
         Operation operation = new Operation();
         operation.setType("A. Operaciones de activo");
