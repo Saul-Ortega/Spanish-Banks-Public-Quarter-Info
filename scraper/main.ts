@@ -7,6 +7,8 @@ import { Operation } from './types/Operation.types';
 import { fetchBankByDenomination, saveBank } from './services/Bank.service';
 import { fetchDeclarationByQuarter, saveDeclaration } from './services/Declaration.service';
 import { fetchOperationByType, saveOperation } from './services/Operation.service';
+import { OperationSection } from './types/OperationSection.types';
+import { fetchOperationSectionByType, saveOperationSection } from './services/OperationSection.service';
 
 (async () => {
     process.stdout.write("Initiating web scraper...");
@@ -227,7 +229,8 @@ import { fetchOperationByType, saveOperation } from './services/Operation.servic
                             const tableCellOperationSectionType: ElementHandle | null = await operationSectionTableRow.$(".iasDivCell.iasDivCellVerticalAlignDefault");
                             const tableCellPracticed: ElementHandle | null = await operationSectionTableRow.$(".iasTextBox.validableValue");
                             let operationSectionType: string = "";
-                            let practiced: boolean | null = null;
+                            let practiced: boolean | undefined = undefined;
+                            let data: Record<string, any> | undefined = {};
                             if ( tableCellOperationSectionType ) operationSectionType = await tableCellOperationSectionType.evaluate(div => div.textContent);
                             if ( tableCellPracticed ) practiced = await tableCellPracticed.evaluate(input => (input as HTMLInputElement).value) == "Si" ? true : false;
                             
@@ -237,13 +240,41 @@ import { fetchOperationByType, saveOperation } from './services/Operation.servic
                                 process.stdout.write("Clicking on detail button...");
                                 await detailButton.click();
                                 process.stdout.write("\tDone\n");
+                                
+                                //GETS ALL TABLE ROWS CONTAINING THE OPERATION SECTIONS DATA
+                                process.stdout.write("Getting all table rows containing the operation sections data...");
+                                await page.waitForSelector("#tablaContenedor2_rows > tr");
+                                let operationSectionDataTableRows: Array<ElementHandle> = await page.$$("#tablaContenedor2_rows > tr");
+                                process.stdout.write("\tDone\n");
 
+                                //STORES ALL DATA INTO RECORD<STRING, ANY>
+                                process.stdout.write("Storing all data into record...");
+                                for ( let operationSectionDataTableRowIndex = 0; operationSectionDataTableRowIndex < operationSectionDataTableRows.length; operationSectionDataTableRowIndex++ ) {
+                                    const operationSectionData: Array<string> = await operationSectionDataTableRows[operationSectionDataTableRowIndex].$$eval("label[id*='Etiqueta']", labels => {
+                                        return labels.map(label => label.textContent).filter(label => label.length > 0);
+                                    });
+
+                                    if ( operationSectionData.length % 2 == 0 ) {
+                                        let keyIndex = 0;
+                                        let valueIndex = operationSectionData.length / 2;
+
+                                        while ( valueIndex < operationSectionData.length ) {
+                                            let key: string = operationSectionData[keyIndex];
+                                            let value: any = operationSectionData[valueIndex];
+                                            data[key] = value;
+                                            keyIndex++;
+                                            valueIndex++;
+                                        }
+                                    }
+                                }
+                                process.stdout.write("\tDone\n");
+                                
                                 //CLICKS IN GO BACK BUTTON FROM DETAILS PAGE
                                 process.stdout.write("Clicking on go back button from details page...");
                                 await page.waitForSelector("#Boton");
                                 await page.locator("#Boton").click();
                                 process.stdout.write("\tDone\n");
-
+                                
                                 //WAITS UNITL ALL TABLE ROWS CONTAINING THE OPERATION SECTIONS ARE LOADED AGAIN
                                 process.stdout.write("Getting all table rows containing the operation sections again...");
                                 await page.waitForSelector("#tablaContenedor1_rows > tr");
@@ -251,6 +282,30 @@ import { fetchOperationByType, saveOperation } from './services/Operation.servic
                                 process.stdout.write("\tDone\n");
                             }
 
+                            let operationSection: OperationSection = { operationId: operation.id, type: operationSectionType, practiced, data };
+
+                            process.stdout.write("Checking if operation section exists in database...");
+                            let foundOperationSection: OperationSection | null = null;
+                            if ( operationSection.operationId ) {
+                                foundOperationSection = await fetchOperationSectionByType(operationSection.operationId, operationSection.type);
+                            }
+                            process.stdout.write("\tDone\n");
+                            
+                            //CHECKS IF THE OPERATION SECTION DOES NOT EXIST AND SAVES IT IN DATABASE 
+                            if ( !foundOperationSection ) {
+                                process.stdout.write("Saving operation section in database...");
+                                const savedOperationSection: OperationSection | null = await saveOperationSection(operationSection);
+
+                                if ( savedOperationSection ) {
+                                    operationSection = savedOperationSection;
+                                    process.stdout.write("\tSaved\n");
+                                } else {
+                                    process.stdout.write("\tNot Saved\n");
+                                }
+                            } else {
+                                operationSection.id = foundOperationSection.id;
+                                process.stdout.write("Operation section Already Exists\n");
+                            }
                         }
 
                         //WAITS UNTIL OPERATION BUTTONS ARE LOADED AGAIN
