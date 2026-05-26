@@ -16,7 +16,7 @@ public class OperationSection {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String type;
-    private boolean practiced;
+    private Boolean practiced;
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> data;
     @ManyToOne
