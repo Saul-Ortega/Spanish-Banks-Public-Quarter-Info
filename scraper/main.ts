@@ -215,29 +215,42 @@ import { fetchOperationByType, saveOperation } from './services/Operation.servic
                             process.stdout.write("Operation Already Exists\n");
                         }
 
-                        //GETS ALL DETAIL BUTTONS FROM THE OPERATIONS PAGE
-                        process.stdout.write("Getting all detail buttons...");
-                        await page.waitForSelector(".ui-button.ui-corner-all.ui-widget.iasWidget.iasButton");
-                        let detailButtons: Array<ElementHandle> = await page.$$(".ui-button.ui-corner-all.ui-widget.iasWidget.iasButton[style*='display: inline']");
+                        //GETS ALL TABLE ROWS CONTAINING THE OPERATION SECTIONS
+                        process.stdout.write("Getting all table rows containing the operation sections...");
+                        await page.waitForSelector("#tablaContenedor1_rows > tr");
+                        let operationSectionTableRows: Array<ElementHandle> = await page.$$("#tablaContenedor1_rows > tr");
                         process.stdout.write("\tDone\n");
-    
-                        for ( let detailButtonIndex = 0; detailButtonIndex < detailButtons.length; detailButtonIndex++ ) {
-                            //CLICKS IN EACH DETAIL BUTTON
-                            process.stdout.write(`Detail Button Number: ${1 + detailButtonIndex}`);
-                            await detailButtons[detailButtonIndex].click();
-                            process.stdout.write("\tDone\n");
-    
-                            //CLICKS IN GO BACK BUTTON FROM DETAILS PAGE
-                            process.stdout.write("Clicking on go back button from details page...");
-                            await page.waitForSelector("#Boton");
-                            await page.locator("#Boton").click();
-                            process.stdout.write("\tDone\n");
 
-                            //WAITS UNTIL ALL DETAIL BUTTONS ARE LOADED AGAIN
-                            process.stdout.write("Getting all detail buttons again...");
-                            await page.waitForSelector(".ui-button.ui-corner-all.ui-widget.iasWidget.iasButton[style*='display: inline']");
-                            detailButtons = await page.$$(".ui-button.ui-corner-all.ui-widget.iasWidget.iasButton[style*='display: inline']");
-                            process.stdout.write("\tDone\n");
+                        for ( let operationSectionTableRowIndex = 0; operationSectionTableRowIndex < operationSectionTableRows.length; operationSectionTableRowIndex++ ) {
+                            const operationSectionTableRow: ElementHandle = operationSectionTableRows[operationSectionTableRowIndex];
+                            
+                            const tableCellOperationSectionType: ElementHandle | null = await operationSectionTableRow.$(".iasDivCell.iasDivCellVerticalAlignDefault");
+                            const tableCellPracticed: ElementHandle | null = await operationSectionTableRow.$(".iasTextBox.validableValue");
+                            let operationSectionType: string = "";
+                            let practiced: boolean | null = null;
+                            if ( tableCellOperationSectionType ) operationSectionType = await tableCellOperationSectionType.evaluate(div => div.textContent);
+                            if ( tableCellPracticed ) practiced = await tableCellPracticed.evaluate(input => (input as HTMLInputElement).value) == "Si" ? true : false;
+                            
+                            //GETS THE DETAIL BUTTON FROM THE OPERATION SECTION TABLE ROW
+                            const detailButton: ElementHandle | null = await operationSectionTableRow.$(".ui-button.ui-corner-all.ui-widget.iasWidget.iasButton[style*='display: inline']");
+                            if ( detailButton ) {
+                                process.stdout.write("Clicking on detail button...");
+                                await detailButton.click();
+                                process.stdout.write("\tDone\n");
+
+                                //CLICKS IN GO BACK BUTTON FROM DETAILS PAGE
+                                process.stdout.write("Clicking on go back button from details page...");
+                                await page.waitForSelector("#Boton");
+                                await page.locator("#Boton").click();
+                                process.stdout.write("\tDone\n");
+
+                                //WAITS UNITL ALL TABLE ROWS CONTAINING THE OPERATION SECTIONS ARE LOADED AGAIN
+                                process.stdout.write("Getting all table rows containing the operation sections again...");
+                                await page.waitForSelector("#tablaContenedor1_rows > tr");
+                                operationSectionTableRows = await page.$$("#tablaContenedor1_rows > tr");
+                                process.stdout.write("\tDone\n");
+                            }
+
                         }
 
                         //WAITS UNTIL OPERATION BUTTONS ARE LOADED AGAIN
