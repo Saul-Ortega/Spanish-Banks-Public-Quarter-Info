@@ -14,7 +14,10 @@ import { fetchOperationSectionByType, saveOperationSection } from './services/Op
     process.stdout.write("Initiating web scraper...");
     process.stdout.write("\tDone\n");
 
-    const launchOptions: LaunchOptions = { headless: false, slowMo: 200 };
+    const launchOptions: LaunchOptions = { 
+        // headless: false, //SHOWS THE BOT PERFORMING THE ACTIONS IN THE BROWSER
+        slowMo: 200 
+    };
     const goToOptions: GoToOptions = { waitUntil: 'networkidle2' };
 
     process.stdout.write("Launching browser...");
@@ -23,6 +26,12 @@ import { fetchOperationSectionByType, saveOperationSection } from './services/Op
     process.stdout.write("Adding a new page...");
     const page: Page = await browser.newPage();
     process.stdout.write("\tDone\n");
+
+    const userAgentOptions = {
+        userAgent: "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0"
+    }
+
+    await page.setUserAgent(userAgentOptions);
 
     process.stdout.write("Going to Spanish Bank web...");
     await page.goto('https://app.bde.es/csfwciu/csfwciuias/xml/Arranque.html', goToOptions);
