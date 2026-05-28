@@ -26,24 +26,22 @@ Spanish banks are legally required to publish their quarterly financial informat
 ```
 .
 ├── api/
-│   ├── docker-compose.yml
+│   ├── docker-compose.yml      # PostgreSQL and Spring Boot services
 │   ├── Dockerfile
 │   ├── mvnw
 │   ├── mvnw.cmd
 │   ├── pom.xml
-│   ├── src
-│   └── target
+│   └── src/
 ├── LICENSE
-├── readme-assets/
+├── readme-assets/              # Assets used by the README
 ├── README.md
-└── scraper
-    ├── main.ts
-    ├── node_modules/
+└── scraper/
+    ├── main.ts                 # Entry point
     ├── package.json
     ├── pnpm-lock.yaml
     ├── pnpm-workspace.yaml
-    ├── services/
-    └── types/
+    ├── services/               # API operations
+    └── types/                  # Interfaces
 
 ```
 
@@ -57,22 +55,13 @@ bank/
 └── BankService.java        # Business Logic
 ```
 
-### 📁 Scraper Structure
-
-```
-.
-├── main.ts                 # Entry point
-├── services/               # API operations
-└── types/                  # Interfaces
-```
-
 ## 🔗 Relational Model
 
 <div align="center">
     <img src="./readme-assets/Relational-Model-API.webp" alt="Relational Model of the API" />
 </div>
 
-## ▶️ Installation
+## ▶️ API Installation
 
 1. Navigate to the api folder
     ```bash
@@ -84,20 +73,30 @@ bank/
       docker compose up
     ```
 
-3. Open a new terminal and navigate to the scraper folder
+### API Demo
+
+![API Demo](./readme-assets/Demo-API.gif)
+
+## ▶️ Scraper Installation
+
+1. Open a new terminal and navigate to the scraper folder
     ```bash
-      cd ../scraper
+      cd scraper
     ```
 
-4. Install the dependencies
+2. Install the dependencies
     ```bash
       pnpm install
     ```
 
-5. Run the scraper
+3. Run the scraper
     ```bash
       pnpm start
     ```
+
+### Scraper Demo
+
+![Scraper Demo](./readme-assets/Demo-SCRAPER.gif)
 
 ## 📋 OpenAPI / Swagger Documentation
 
@@ -111,22 +110,13 @@ Once the container is running, you can navigate to the API documentation.
     <img src="./readme-assets/Swagger-API.png" alt="OpenAPI / Swagger screenshot" />
 </div>
 
-## ⚙️ Overview
-
-### API Demo
-
-![API Demo](./readme-assets/Demo-API.gif)
-
-### Scraper Demo
-
-![Scraper Demo](./readme-assets/Demo-SCRAPER.gif)
-
 ## 🎯 Future Improvements
 
-- Add Json Web Token.
-
-- Improve validations api.
-
+- Add JSON Web Token.
+- Improve validations to API endpoints.
 - Persist scraper logs in a file.
+- Implement CI/CD with Github Actions.
 
-- Implement CI/CD with Github Actions
+## ⚖️ License
+
+This project is licensed under the [MIT License](LICENSE).
