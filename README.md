@@ -22,6 +22,21 @@ Spanish banks are legally required to publish their quarterly financial informat
 [![Swagger](https://img.shields.io/badge/Swagger-85EA2D?logo=swagger&logoColor=173647)](#)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=fff)](#)
 
+## 🔌 API Endpoints Example
+
+| Resource | Method & Route | Description |
+|---|---|---|
+| **Banks** | GET /api/banks/{id} | Get bank by ID |
+| **Declarations** | GET /api/banks/{bankId}/declarations/{id} | Get declaration by ID |
+| **Operations** | GET /api/declarations/{declarationId}/operations/{id} | Get operation by ID |
+| **Operation Sections** | GET /api/operations/{operationId}/operation-sections/{id} | Get operation section by ID |
+
+## 🔗 Relational Model
+
+<div align="center">
+    <img src="./readme-assets/Relational-Model-API.webp" alt="Relational Model of the API" />
+</div>
+
 ## 🏗️ Project Structure
 ```
 .
@@ -55,12 +70,6 @@ bank/
 └── BankService.java        # Business Logic
 ```
 
-## 🔗 Relational Model
-
-<div align="center">
-    <img src="./readme-assets/Relational-Model-API.webp" alt="Relational Model of the API" />
-</div>
-
 ## ▶️ API Installation
 
 1. Navigate to the api folder
@@ -79,7 +88,7 @@ bank/
 
 ## ▶️ Scraper Installation
 
-1. Open a new terminal and navigate to the scraper folder
+1. Navigate to the scraper folder
     ```bash
       cd scraper
     ```
@@ -97,6 +106,42 @@ bank/
 ### Scraper Demo
 
 ![Scraper Demo](./readme-assets/Demo-SCRAPER.gif)
+
+## 🧪 API Testing
+
+You have to run a postgres docker container so the application can compile.
+
+1. Create an application-test.properties file
+    ```bash
+      touch application-test.properties
+    ```
+
+2. Add the following properties to the test file
+    ```bash
+      SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/database
+      SPRING_DATASOURCE_USERNAME=user
+      SPRING_DATASOURCE_PASSWORD=password
+    ```
+
+3. Add this property to application.properties file
+    ```bash
+      spring.profiles.active=test
+    ```
+
+4. Open a terminal and navigate to the api folder
+    ```bash
+      cd api
+    ```
+
+5. Run the tests with the Maven
+
+    ```bash
+      ./mvnw test
+    ```
+
+### Testing Demo
+
+![Testing Demo](./readme-assets/Demo-TEST.gif)
 
 ## 📋 OpenAPI / Swagger Documentation
 
